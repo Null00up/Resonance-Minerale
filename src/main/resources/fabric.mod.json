@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "resonance_minerale",
+  "version": "${version}",
+  "name": "Résonance Minérale",
+  "description": "Détection minérale progressive via le Cœur Tellurique.",
+  "authors": [
+    "Resonance Minerale"
+  ],
+  "license": "All Rights Reserved",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.resonanceminerale.ResonanceMineraleMod"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.10",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
