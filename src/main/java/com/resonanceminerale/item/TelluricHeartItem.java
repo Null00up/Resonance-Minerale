@@ -38,7 +38,7 @@ public class TelluricHeartItem extends Item {
         OreDetectionResult result = OreDetectionService.detectNearbyOre(world, player.getBlockPos(), DETECTION_RADIUS, OreType.COAL);
 
         if (result.found()) {
-            player.sendMessage(Text.literal("Le Cœur Tellurique frétille faiblement..."), true);
+            player.sendMessage(Text.literal(messageFor(result.signalStrength())), true);
             world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.BLOCK_AMETHYST_BLOCK_RESONATE, SoundCategory.PLAYERS, 0.5F, 0.7F);
         } else {
             player.sendMessage(Text.literal("Aucune résonance minérale proche."), true);
@@ -46,5 +46,14 @@ public class TelluricHeartItem extends Item {
 
         PlayerCooldownManager.applyCooldown(player, this, COOLDOWN_SECONDS);
         return ActionResult.SUCCESS_SERVER;
+    }
+
+    private static String messageFor(OreDetectionResult.SignalStrength signalStrength) {
+        return switch (signalStrength) {
+            case STRONG -> "Le Cœur Tellurique vibre fortement...";
+            case MEDIUM -> "Le Cœur Tellurique frétille...";
+            case WEAK -> "Une faible résonance minérale se fait sentir...";
+            case NONE -> "Aucune résonance minérale proche.";
+        };
     }
 }
