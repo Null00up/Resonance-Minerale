@@ -46,7 +46,22 @@ public class TelluricHeartItem extends Item {
         );
 
         if (result.found()) {
-            player.sendMessage(Text.literal("Le Cœur Tellurique frétille faiblement..."), true);
+            String message = switch (result.signalStrength()) {
+                case STRONG -> "Le Cœur Tellurique vibre fortement...";
+                case MEDIUM -> "Le Cœur Tellurique frétille...";
+                case WEAK -> "Une faible résonance minérale se fait sentir...";
+                case NONE -> "Aucune résonance minérale proche.";
+            };
+
+            float pitch = switch (result.signalStrength()) {
+                case STRONG -> 1.2F;
+                case MEDIUM -> 0.9F;
+                case WEAK -> 0.6F;
+                case NONE -> 0.5F;
+            };
+
+            player.sendMessage(Text.literal(message), true);
+
             world.playSound(
                     null,
                     player.getX(),
@@ -55,7 +70,7 @@ public class TelluricHeartItem extends Item {
                     SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME,
                     SoundCategory.PLAYERS,
                     0.5F,
-                    0.7F
+                    pitch
             );
         } else {
             player.sendMessage(Text.literal("Aucune résonance minérale proche."), true);
