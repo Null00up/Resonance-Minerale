@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "QCQ",
+    "CAC",
+    "QCQ"
+  ],
+  "key": {
+    "Q": {
+      "item": "minecraft:coal"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "A": {
+      "item": "minecraft:amethyst_shard"
+    }
+  },
+  "result": {
+    "item": "resonance_minerale:telluric_heart",
+    "count": 1
+  }
+}
