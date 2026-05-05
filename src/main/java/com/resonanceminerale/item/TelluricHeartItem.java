@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 
 public class TelluricHeartItem extends Item {
     public static final int DETECTION_RADIUS = 6;
-    public static final int COOLDOWN_SECONDS = 30;
+    public static final int COOLDOWN_SECONDS = 3;
 
     public TelluricHeartItem(Settings settings) {
         super(settings);
