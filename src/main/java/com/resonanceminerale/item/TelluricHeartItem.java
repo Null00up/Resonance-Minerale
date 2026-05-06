@@ -16,8 +16,14 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 public class TelluricHeartItem extends Item {
     public static final int COOLDOWN_SECONDS = 3;
+
+    private static final Map<UUID, OreType> PLAYER_TARGETS = new HashMap<>();
 
     public TelluricHeartItem(Settings settings) {
         super(settings);
@@ -32,7 +38,26 @@ public class TelluricHeartItem extends Item {
         }
 
         ServerPlayerEntity player = (ServerPlayerEntity) user;
-        OreType targetOre = OreType.COAL;
+
+        if (player.isSneaking()) {
+            OreType newTarget = cycleTargetOre(player);
+            player.sendMessage(Text.literal("Cible changée : " + newTarget.displayName()), true);
+
+            world.playSound(
+                    null,
+                    player.getX(),
+                    player.getY(),
+                    player.getZ(),
+                    SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME,
+                    SoundCategory.PLAYERS,
+                    0.6F,
+                    1.4F
+            );
+
+            return TypedActionResult.success(stack, false);
+        }
+
+        OreType targetOre = getTargetOre(player);
 
         if (PlayerCooldownManager.isOnCooldown(player, this)) {
             player.sendMessage(Text.literal("Le Cœur Tellurique doit se stabiliser..."), true);
@@ -63,11 +88,26 @@ public class TelluricHeartItem extends Item {
                     pitchFor(signalStrength)
             );
         } else {
-            player.sendMessage(Text.literal("Aucune résonance minérale proche."), true);
+            player.sendMessage(Text.literal("Aucune résonance de " + targetOre.displayName() + " proche."), true);
         }
 
         PlayerCooldownManager.applyCooldown(player, this, COOLDOWN_SECONDS);
         return TypedActionResult.success(stack, false);
+    }
+
+    private static OreType getTargetOre(ServerPlayerEntity player) {
+        return PLAYER_TARGETS.getOrDefault(player.getUuid(), OreType.COAL);
+    }
+
+    private static OreType cycleTargetOre(ServerPlayerEntity player) {
+        OreType currentTarget = getTargetOre(player);
+        OreType[] availableTargets = OreType.values();
+
+        int nextIndex = (currentTarget.ordinal() + 1) % availableTargets.length;
+        OreType nextTarget = availableTargets[nextIndex];
+
+        PLAYER_TARGETS.put(player.getUuid(), nextTarget);
+        return nextTarget;
     }
 
     private static String messageFor(OreDetectionResult.SignalStrength signalStrength, OreType oreType) {
@@ -75,7 +115,7 @@ public class TelluricHeartItem extends Item {
             case STRONG -> "Résonance de " + oreType.displayName() + " très forte...";
             case MEDIUM -> "Résonance de " + oreType.displayName() + " détectée...";
             case WEAK -> "Faible résonance de " + oreType.displayName() + "...";
-            case NONE -> "Aucune résonance minérale proche.";
+            case NONE -> "Aucune résonance de " + oreType.displayName() + " proche.";
         };
     }
 
