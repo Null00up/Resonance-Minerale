@@ -13,6 +13,7 @@ public final class OreDetectionService {
 
         for (BlockPos candidate : BlockPos.iterateOutwards(origin, radius, radius, radius)) {
             int distanceSquared = (int) origin.getSquaredDistance(candidate);
+
             if (distanceSquared > radiusSquared) {
                 continue;
             }
@@ -23,9 +24,9 @@ public final class OreDetectionService {
         }
 
         if (nearestDistanceSquared != Integer.MAX_VALUE) {
-            return OreDetectionResult.found(oreType, nearestDistanceSquared);
+            return OreDetectionResult.found(oreType, nearestDistanceSquared, radius);
         }
 
-        return OreDetectionResult.none(oreType);
+        return OreDetectionResult.none(oreType, radius);
     }
 }

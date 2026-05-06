@@ -1,6 +1,11 @@
 package com.resonanceminerale.detection;
 
-public record OreDetectionResult(boolean found, OreType oreType, int nearestDistanceSquared) {
+public record OreDetectionResult(
+        boolean found,
+        OreType oreType,
+        int nearestDistanceSquared,
+        int detectionRadius
+) {
     public enum SignalStrength {
         STRONG,
         MEDIUM,
@@ -8,15 +13,12 @@ public record OreDetectionResult(boolean found, OreType oreType, int nearestDist
         NONE
     }
 
-    private static final int STRONG_DISTANCE_SQUARED = 4; // <= 2 blocs
-    private static final int MEDIUM_DISTANCE_SQUARED = 16; // <= 4 blocs
-
-    public static OreDetectionResult none(OreType oreType) {
-        return new OreDetectionResult(false, oreType, Integer.MAX_VALUE);
+    public static OreDetectionResult none(OreType oreType, int detectionRadius) {
+        return new OreDetectionResult(false, oreType, Integer.MAX_VALUE, detectionRadius);
     }
 
-    public static OreDetectionResult found(OreType oreType, int nearestDistanceSquared) {
-        return new OreDetectionResult(true, oreType, nearestDistanceSquared);
+    public static OreDetectionResult found(OreType oreType, int nearestDistanceSquared, int detectionRadius) {
+        return new OreDetectionResult(true, oreType, nearestDistanceSquared, detectionRadius);
     }
 
     public SignalStrength signalStrength() {
@@ -24,11 +26,14 @@ public record OreDetectionResult(boolean found, OreType oreType, int nearestDist
             return SignalStrength.NONE;
         }
 
-        if (nearestDistanceSquared <= STRONG_DISTANCE_SQUARED) {
+        int strongLimit = Math.max(4, (detectionRadius * detectionRadius) / 9);
+        int mediumLimit = Math.max(16, (detectionRadius * detectionRadius) / 3);
+
+        if (nearestDistanceSquared <= strongLimit) {
             return SignalStrength.STRONG;
         }
 
-        if (nearestDistanceSquared <= MEDIUM_DISTANCE_SQUARED) {
+        if (nearestDistanceSquared <= mediumLimit) {
             return SignalStrength.MEDIUM;
         }
 
