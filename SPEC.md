@@ -145,7 +145,7 @@ Exemples :
 - LAPIS
 - DIAMOND
 - EMERALD
-- ANCIENT_DEBRIS
+- ANCIENT DEBRIS
 
 ### PlayerCooldownManager.java
 
