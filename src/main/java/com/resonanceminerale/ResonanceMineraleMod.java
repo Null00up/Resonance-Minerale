@@ -1,6 +1,7 @@
 package com.resonanceminerale;
 
 import com.resonanceminerale.registry.ModItems;
+import com.resonanceminerale.visual.OreVisualEffectService;
 import net.fabricmc.api.ModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ public class ResonanceMineraleMod implements ModInitializer {
     @Override
     public void onInitialize() {
         ModItems.register();
+        OreVisualEffectService.register();
         LOGGER.info("Résonance Minérale initialisé.");
     }
 }

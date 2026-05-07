@@ -10,6 +10,7 @@ public final class OreDetectionService {
     public static OreDetectionResult detectNearbyOre(World world, BlockPos origin, int radius, OreType oreType) {
         int radiusSquared = radius * radius;
         int nearestDistanceSquared = Integer.MAX_VALUE;
+        BlockPos nearestOrePos = null;
 
         for (BlockPos candidate : BlockPos.iterateOutwards(origin, radius, radius, radius)) {
             int distanceSquared = (int) origin.getSquaredDistance(candidate);
@@ -18,13 +19,14 @@ public final class OreDetectionService {
                 continue;
             }
 
-            if (oreType.blocks().contains(world.getBlockState(candidate).getBlock())) {
-                nearestDistanceSquared = Math.min(nearestDistanceSquared, distanceSquared);
+            if (oreType.blocks().contains(world.getBlockState(candidate).getBlock()) && distanceSquared < nearestDistanceSquared) {
+                nearestDistanceSquared = distanceSquared;
+                nearestOrePos = candidate.toImmutable();
             }
         }
 
-        if (nearestDistanceSquared != Integer.MAX_VALUE) {
-            return OreDetectionResult.found(oreType, nearestDistanceSquared, radius);
+        if (nearestOrePos != null) {
+            return OreDetectionResult.found(oreType, nearestDistanceSquared, radius, nearestOrePos);
         }
 
         return OreDetectionResult.none(oreType, radius);

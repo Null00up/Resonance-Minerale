@@ -4,6 +4,7 @@ import com.resonanceminerale.cooldown.PlayerCooldownManager;
 import com.resonanceminerale.detection.OreDetectionResult;
 import com.resonanceminerale.detection.OreDetectionService;
 import com.resonanceminerale.detection.OreType;
+import com.resonanceminerale.visual.OreVisualEffectService;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -76,6 +77,7 @@ public class TelluricHeartItem extends Item {
 
             player.sendMessage(Text.literal(messageFor(signalStrength, targetOre)), true);
             spawnSignalParticles(player, signalStrength);
+            OreVisualEffectService.tryStartVisibleOreEffect(player, result);
 
             world.playSound(
                     null,
