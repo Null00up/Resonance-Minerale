@@ -5,6 +5,7 @@ import com.resonanceminerale.detection.OreDetectionResult;
 import com.resonanceminerale.detection.OreDetectionService;
 import com.resonanceminerale.detection.OreType;
 import com.resonanceminerale.visual.OreVisualEffectService;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,12 +15,15 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import net.minecraft.util.Formatting;
 
 public class TelluricHeartItem extends Item {
     public static final int COOLDOWN_SECONDS = 3;
@@ -42,7 +46,9 @@ public class TelluricHeartItem extends Item {
 
         if (player.isSneaking()) {
             OreType newTarget = cycleTargetOre(player);
-            player.sendMessage(Text.literal("Cible changée : " + newTarget.displayName()), true);
+            updateStackRarity(stack, newTarget);
+
+            player.sendMessage(targetChangedMessage(newTarget), true);
 
             world.playSound(
                     null,
@@ -59,9 +65,10 @@ public class TelluricHeartItem extends Item {
         }
 
         OreType targetOre = getTargetOre(player);
+        updateStackRarity(stack, targetOre);
 
         if (PlayerCooldownManager.isOnCooldown(player, this)) {
-            player.sendMessage(Text.literal("Le Cœur Tellurique doit se stabiliser..."), true);
+            player.sendMessage(Text.literal("Le Cœur Tellurique récupère son énergie..."), true);
             return TypedActionResult.consume(stack);
         }
 
@@ -75,7 +82,7 @@ public class TelluricHeartItem extends Item {
         if (result.found()) {
             OreDetectionResult.SignalStrength signalStrength = result.signalStrength();
 
-            player.sendMessage(Text.literal(messageFor(signalStrength, targetOre)), true);
+            player.sendMessage(messageFor(signalStrength, targetOre), true);
             spawnSignalParticles(player, signalStrength);
             OreVisualEffectService.tryStartVisibleOreEffect(player, result);
 
@@ -90,7 +97,7 @@ public class TelluricHeartItem extends Item {
                     pitchFor(signalStrength)
             );
         } else {
-            player.sendMessage(Text.literal("Aucune résonance de " + targetOre.displayName() + " proche."), true);
+            player.sendMessage(messageFor(OreDetectionResult.SignalStrength.NONE, targetOre), true);
         }
 
         PlayerCooldownManager.applyCooldown(player, this, COOLDOWN_SECONDS);
@@ -112,12 +119,51 @@ public class TelluricHeartItem extends Item {
         return nextTarget;
     }
 
-    private static String messageFor(OreDetectionResult.SignalStrength signalStrength, OreType oreType) {
-        return switch (signalStrength) {
+    private static void updateStackRarity(ItemStack stack, OreType oreType) {
+        stack.set(DataComponentTypes.RARITY, rarityFor(oreType));
+    }
+
+    private static Rarity rarityFor(OreType oreType) {
+        return switch (oreType) {
+            case COAL, COPPER, IRON -> Rarity.COMMON;
+            case GOLD, REDSTONE, LAPIS -> Rarity.UNCOMMON;
+            case DIAMOND, EMERALD -> Rarity.RARE;
+            case ANCIENT_DEBRIS -> Rarity.EPIC;
+        };
+    }
+
+    private static Text messageFor(OreDetectionResult.SignalStrength signalStrength, OreType oreType) {
+        Formatting oreColor = formattingFor(oreType);
+
+        String message = switch (signalStrength) {
             case STRONG -> "Résonance de " + oreType.displayName() + " très forte...";
             case MEDIUM -> "Résonance de " + oreType.displayName() + " détectée...";
             case WEAK -> "Faible résonance de " + oreType.displayName() + "...";
             case NONE -> "Aucune résonance de " + oreType.displayName() + " proche.";
+        };
+
+        return Text.empty()
+                .append(Text.literal("⟦ ").formatted(Formatting.DARK_GRAY))
+                .append(Text.literal(message).formatted(oreColor))
+                .append(Text.literal(" ⟧").formatted(Formatting.DARK_GRAY));
+    }
+
+    private static Text targetChangedMessage(OreType oreType) {
+        Formatting oreColor = formattingFor(oreType);
+
+        return Text.empty()
+                .append(Text.literal("⟦ ").formatted(Formatting.WHITE))
+                .append(Text.literal("Cible changée : ").formatted(Formatting.WHITE))
+                .append(Text.literal(oreType.displayName()).formatted(oreColor))
+                .append(Text.literal(" ⟧").formatted(Formatting.WHITE));
+    }
+
+    private static Formatting formattingFor(OreType oreType) {
+        return switch (oreType) {
+            case COAL, COPPER, IRON -> Formatting.WHITE;
+            case GOLD, REDSTONE, LAPIS -> Formatting.YELLOW;
+            case DIAMOND, EMERALD -> Formatting.AQUA;
+            case ANCIENT_DEBRIS -> Formatting.LIGHT_PURPLE;
         };
     }
 

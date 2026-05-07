@@ -131,8 +131,9 @@ public final class OreVisualEffectService {
                     dust(1.00F, 0.75F, 0.35F, 0.65F)
             );
             case IRON -> List.of(
-                    dust(0.65F, 0.65F, 0.65F, 0.90F),
-                    dust(0.95F, 0.95F, 0.90F, 0.65F)
+                    dust(0.72F, 0.68F, 0.60F, 0.90F),
+                    dust(0.95F, 0.78F, 0.48F, 0.70F),
+                    dust(0.55F, 0.52F, 0.48F, 0.60F)
             );
             case GOLD -> List.of(
                     dust(1.00F, 0.78F, 0.10F, 0.95F),
