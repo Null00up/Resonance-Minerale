@@ -1,5 +1,7 @@
 # Résonance Minérale
 
+**Résonance Minérale** is a Minecraft mod created by **Trys**.
+
 **Résonance Minérale** est un mod Minecraft centré sur un pouvoir progressif de détection des minerais.
 
 Le joueur fabrique un objet spécial appelé **Cœur Tellurique**, qui lui permet de ressentir la présence de certains minerais autour de lui. Au départ, le joueur ne peut détecter que le charbon. Avec le temps, l’objet peut être amélioré pour détecter d’autres minerais et gagner en puissance, précision, stabilité et endurance.
@@ -57,3 +59,22 @@ Progression proposée :
 
 ```text
 Charbon → Cuivre → Fer → Or → Redstone → Lapis → Diamant → Émeraude → Débris antiques
+
+## Author
+
+Created by **Trys**.
+
+## Copyright
+
+© 2026 Trys. All rights reserved.
+
+This mod, including its code, textures, assets, concepts, and associated files, is the property of its original author, published under the pseudonym Trys.
+
+You are allowed to download and use this mod for personal gameplay only.
+
+You are not allowed to redistribute, modify, publish, reuse, or claim this mod or any part of it as your own without permission.
+
+## Disclaimer
+
+This project is not an official Minecraft product.  
+It is not approved by or associated with Mojang, Microsoft, or Fabric.

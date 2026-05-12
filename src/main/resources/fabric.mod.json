@@ -3,9 +3,14 @@
   "id": "resonance_minerale",
   "version": "${version}",
   "name": "Résonance Minérale",
-  "description": "Détection minérale progressive via le Cœur Tellurique.",
+  "description": "A Minecraft mod that adds a mineral resonance system through the Cœur Tellurique, allowing players to detect nearby ores.",
   "authors": [
-    "Resonance Minerale"
+    "Trys"
+  ],
+  "contact": {
+    "homepage": "",
+    "sources": "",
+    "issues": ""
   ],
   "license": "All Rights Reserved",
   "environment": "*",
