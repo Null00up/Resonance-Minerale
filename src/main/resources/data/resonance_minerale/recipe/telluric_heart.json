@@ -1,23 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "pattern": [
-    "QCQ",
-    "CAC",
-    "QCQ"
+    "CDC",
+    "DAD",
+    "CDC"
   ],
   "key": {
-    "Q": {
+    "C": {
       "item": "minecraft:coal"
     },
-    "C": {
-      "item": "minecraft:copper_ingot"
+    "D": {
+      "item": "minecraft:dripstone_block"
     },
     "A": {
       "item": "minecraft:amethyst_shard"
     }
   },
   "result": {
-    "item": "resonance_minerale:telluric_heart",
+    "id": "resonance_minerale:telluric_heart",
     "count": 1
   }
 }

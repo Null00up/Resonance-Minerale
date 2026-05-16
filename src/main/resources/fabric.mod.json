@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "id": "resonance_minerale",
   "version": "${version}",
-  "name": "Résonance Minérale",
-  "description": "A Minecraft mod that adds a mineral resonance system through the Cœur Tellurique, allowing players to detect nearby ores.",
+  "name": "Resonance Minerale",
+  "description": "A Minecraft mod that adds a mineral resonance system through the Coeur Tellurique, allowing players to detect nearby ores.",
   "authors": [
     "Trys"
   ],
@@ -11,7 +11,7 @@
     "homepage": "",
     "sources": "",
     "issues": ""
-  ],
+  },
   "license": "All Rights Reserved",
   "environment": "*",
   "entrypoints": {

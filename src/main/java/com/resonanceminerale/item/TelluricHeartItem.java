@@ -6,6 +6,9 @@ import com.resonanceminerale.detection.OreDetectionService;
 import com.resonanceminerale.detection.OreType;
 import com.resonanceminerale.visual.OreVisualEffectService;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.CustomModelDataComponent;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -14,6 +17,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
@@ -22,8 +26,6 @@ import net.minecraft.world.World;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
-import net.minecraft.util.Formatting;
 
 public class TelluricHeartItem extends Item {
     public static final int COOLDOWN_SECONDS = 3;
@@ -47,6 +49,7 @@ public class TelluricHeartItem extends Item {
         if (player.isSneaking()) {
             OreType newTarget = cycleTargetOre(player);
             updateStackRarity(stack, newTarget);
+            updateItemSkin(stack, newTarget);
 
             player.sendMessage(targetChangedMessage(newTarget), true);
 
@@ -66,6 +69,7 @@ public class TelluricHeartItem extends Item {
 
         OreType targetOre = getTargetOre(player);
         updateStackRarity(stack, targetOre);
+        updateItemSkin(stack, targetOre);
 
         if (PlayerCooldownManager.isOnCooldown(player, this)) {
             player.sendMessage(Text.literal("Le Cœur Tellurique récupère son énergie..."), true);
@@ -85,6 +89,7 @@ public class TelluricHeartItem extends Item {
             player.sendMessage(messageFor(signalStrength, targetOre), true);
             spawnSignalParticles(player, signalStrength);
             OreVisualEffectService.tryStartVisibleOreEffect(player, result);
+            applyResonancePenalty(player, targetOre);
 
             world.playSound(
                     null,
@@ -199,5 +204,47 @@ public class TelluricHeartItem extends Item {
                 0.9D,
                 0.02D
         );
+    }
+
+    private static void applyResonancePenalty(ServerPlayerEntity player, OreType oreType) {
+        switch (oreType) {
+            case COAL, COPPER, IRON -> {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 60, 0));
+                player.getHungerManager().addExhaustion(0.5F);
+            }
+
+            case GOLD, REDSTONE, LAPIS -> {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 100, 0));
+                player.getHungerManager().addExhaustion(1.0F);
+            }
+
+            case DIAMOND, EMERALD -> {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 140, 0));
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 0));
+                player.getHungerManager().addExhaustion(1.5F);
+            }
+
+            case ANCIENT_DEBRIS -> {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 200, 1));
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 0));
+                player.getHungerManager().addExhaustion(2.0F);
+            }
+        }
+    }
+
+    private static void updateItemSkin(ItemStack stack, OreType oreType) {
+        int customModelData = switch (oreType) {
+            case COAL -> 1;
+            case COPPER -> 2;
+            case IRON -> 3;
+            case GOLD -> 4;
+            case REDSTONE -> 5;
+            case LAPIS -> 6;
+            case DIAMOND -> 7;
+            case EMERALD -> 8;
+            case ANCIENT_DEBRIS -> 9;
+        };
+
+        stack.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(customModelData));
     }
 }
