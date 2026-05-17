@@ -1,3 +1,11 @@
 {
-  "item.resonance_minerale.telluric_heart": "Telluric Heart"
+  "item.resonance_minerale.telluric_heart": "Telluric Heart — Coal",
+  "item.resonance_minerale.telluric_heart_tier_copper": "Telluric Heart — Copper",
+  "item.resonance_minerale.telluric_heart_tier_iron": "Telluric Heart — Iron",
+  "item.resonance_minerale.telluric_heart_tier_gold": "Telluric Heart — Gold",
+  "item.resonance_minerale.telluric_heart_tier_redstone": "Telluric Heart — Redstone",
+  "item.resonance_minerale.telluric_heart_tier_lapis": "Telluric Heart — Lapis",
+  "item.resonance_minerale.telluric_heart_tier_diamond": "Telluric Heart — Diamond",
+  "item.resonance_minerale.telluric_heart_tier_emerald": "Telluric Heart — Emerald",
+  "item.resonance_minerale.telluric_heart_tier_ancient_debris": "Telluric Heart — Ancient Debris"
 }

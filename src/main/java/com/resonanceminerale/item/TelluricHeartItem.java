@@ -12,6 +12,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -23,62 +24,59 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.List;
 
 public class TelluricHeartItem extends Item {
-    public static final int COOLDOWN_SECONDS = 3;
+    public static final int COOLDOWN_SECONDS = 30;
+    private static final float TARGET_CHANGE_SOUND_VOLUME = 1.0F;
+    private static final float RESONANCE_SOUND_VOLUME = 1.5F;
 
-    private static final Map<UUID, OreType> PLAYER_TARGETS = new HashMap<>();
+    private final int maxTier;
 
-    public TelluricHeartItem(Settings settings) {
+    public TelluricHeartItem(Settings settings, int maxTier) {
         super(settings);
+        this.maxTier = Math.max(1, Math.min(maxTier, OreType.values().length));
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack stack = user.getStackInHand(hand);
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        ItemStack stack = player.getStackInHand(hand);
 
         if (world.isClient()) {
             return TypedActionResult.success(stack, true);
         }
 
-        ServerPlayerEntity player = (ServerPlayerEntity) user;
+        ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
 
-        if (player.isSneaking()) {
-            OreType newTarget = cycleTargetOre(player);
-            updateStackRarity(stack, newTarget);
-            updateItemSkin(stack, newTarget);
-
-            player.sendMessage(targetChangedMessage(newTarget), true);
+        if (serverPlayer.isSneaking()) {
+            OreType nextOre = cycleTargetOre(stack);
+            serverPlayer.sendMessage(targetChangedMessage(nextOre), true);
 
             world.playSound(
                     null,
-                    player.getX(),
-                    player.getY(),
-                    player.getZ(),
+                    serverPlayer.getX(),
+                    serverPlayer.getY(),
+                    serverPlayer.getZ(),
                     SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME,
                     SoundCategory.PLAYERS,
-                    0.6F,
+                    TARGET_CHANGE_SOUND_VOLUME,
                     1.4F
             );
 
             return TypedActionResult.success(stack, false);
         }
 
-        OreType targetOre = getTargetOre(player);
-        updateStackRarity(stack, targetOre);
-        updateItemSkin(stack, targetOre);
+        OreType targetOre = getTargetOre(stack);
+        updateStackVisuals(stack, targetOre);
 
-        if (PlayerCooldownManager.isOnCooldown(player, this)) {
-            player.sendMessage(Text.literal("Le Cœur Tellurique récupère son énergie..."), true);
-            return TypedActionResult.consume(stack);
+        if (PlayerCooldownManager.isOnCooldown(serverPlayer, this)) {
+            serverPlayer.sendMessage(Text.literal("Le Cœur Tellurique récupère son énergie..."), true);
+            return TypedActionResult.pass(stack);
         }
 
         OreDetectionResult result = OreDetectionService.detectNearbyOre(
                 world,
-                player.getBlockPos(),
+                serverPlayer.getBlockPos(),
                 targetOre.detectionRadius(),
                 targetOre
         );
@@ -86,46 +84,95 @@ public class TelluricHeartItem extends Item {
         if (result.found()) {
             OreDetectionResult.SignalStrength signalStrength = result.signalStrength();
 
-            player.sendMessage(messageFor(signalStrength, targetOre), true);
-            spawnSignalParticles(player, signalStrength);
-            OreVisualEffectService.tryStartVisibleOreEffect(player, result);
-            applyResonancePenalty(player, targetOre);
+            serverPlayer.sendMessage(messageFor(signalStrength, targetOre), true);
+            spawnSignalParticles(serverPlayer, signalStrength);
+            OreVisualEffectService.tryStartVisibleOreEffect(serverPlayer, result);
+            applyResonancePenalty(serverPlayer, targetOre);
 
             world.playSound(
                     null,
-                    player.getX(),
-                    player.getY(),
-                    player.getZ(),
+                    serverPlayer.getX(),
+                    serverPlayer.getY(),
+                    serverPlayer.getZ(),
                     SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME,
                     SoundCategory.PLAYERS,
-                    0.7F,
+                    RESONANCE_SOUND_VOLUME,
                     pitchFor(signalStrength)
             );
         } else {
-            player.sendMessage(messageFor(OreDetectionResult.SignalStrength.NONE, targetOre), true);
+            serverPlayer.sendMessage(messageFor(OreDetectionResult.SignalStrength.NONE, targetOre), true);
         }
 
-        PlayerCooldownManager.applyCooldown(player, this, COOLDOWN_SECONDS);
+        PlayerCooldownManager.applyCooldown(serverPlayer, this, COOLDOWN_SECONDS);
         return TypedActionResult.success(stack, false);
     }
 
-    private static OreType getTargetOre(ServerPlayerEntity player) {
-        return PLAYER_TARGETS.getOrDefault(player.getUuid(), OreType.COAL);
+    @Override
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        OreType targetOre = getTargetOre(stack);
+        OreType maxOre = maxUnlockedOre();
+
+        tooltip.add(Text.literal("Niveau : ")
+                .formatted(Formatting.GRAY)
+                .append(Text.literal(maxOre.displayName()).formatted(formattingFor(maxOre))));
+
+        tooltip.add(Text.literal("Cible : ")
+                .formatted(Formatting.GRAY)
+                .append(Text.literal(targetOre.displayName()).formatted(formattingFor(targetOre))));
+
+        tooltip.add(Text.literal("Clic droit : sonder les environs").formatted(Formatting.DARK_GRAY));
+        tooltip.add(Text.literal("Shift + clic droit : changer de minerai").formatted(Formatting.DARK_GRAY));
     }
 
-    private static OreType cycleTargetOre(ServerPlayerEntity player) {
-        OreType currentTarget = getTargetOre(player);
-        OreType[] availableTargets = OreType.values();
+    private OreType getTargetOre(ItemStack stack) {
+        CustomModelDataComponent modelData = stack.get(DataComponentTypes.CUSTOM_MODEL_DATA);
+        int modelValue = modelData == null ? 1 : modelData.value();
+        int index = modelValue - 1;
 
-        int nextIndex = (currentTarget.ordinal() + 1) % availableTargets.length;
-        OreType nextTarget = availableTargets[nextIndex];
+        OreType[] ores = OreType.values();
 
-        PLAYER_TARGETS.put(player.getUuid(), nextTarget);
-        return nextTarget;
+        if (index < 0 || index >= ores.length) {
+            return OreType.COAL;
+        }
+
+        OreType ore = ores[index];
+        return isUnlocked(ore) ? ore : OreType.COAL;
     }
 
-    private static void updateStackRarity(ItemStack stack, OreType oreType) {
-        stack.set(DataComponentTypes.RARITY, rarityFor(oreType));
+    private OreType cycleTargetOre(ItemStack stack) {
+        OreType currentOre = getTargetOre(stack);
+        int nextIndex = currentOre.ordinal() + 1;
+
+        if (nextIndex >= maxTier) {
+            nextIndex = 0;
+        }
+
+        OreType nextOre = OreType.values()[nextIndex];
+        updateStackVisuals(stack, nextOre);
+        return nextOre;
+    }
+
+    private boolean isUnlocked(OreType oreType) {
+        return oreType.ordinal() < maxTier;
+    }
+
+    private OreType maxUnlockedOre() {
+        return OreType.values()[maxTier - 1];
+    }
+
+    private void updateStackVisuals(ItemStack stack, OreType oreType) {
+        updateStackRarity(stack, maxUnlockedOre());
+        updateItemSkin(stack, oreType);
+    }
+
+    private static void updateStackRarity(ItemStack stack, OreType maxUnlockedOre) {
+        stack.set(DataComponentTypes.RARITY, rarityFor(maxUnlockedOre));
+    }
+
+    public static Rarity rarityForTier(int tier) {
+        OreType[] ores = OreType.values();
+        int safeTier = Math.max(1, Math.min(tier, ores.length));
+        return rarityFor(ores[safeTier - 1]);
     }
 
     private static Rarity rarityFor(OreType oreType) {
@@ -157,15 +204,15 @@ public class TelluricHeartItem extends Item {
         Formatting oreColor = formattingFor(oreType);
 
         return Text.empty()
-                .append(Text.literal("⟦ ").formatted(Formatting.WHITE))
-                .append(Text.literal("Cible changée : ").formatted(Formatting.WHITE))
+                .append(Text.literal("⟦ ").formatted(Formatting.GRAY))
+                .append(Text.literal("Cible changée : ").formatted(Formatting.GRAY))
                 .append(Text.literal(oreType.displayName()).formatted(oreColor))
-                .append(Text.literal(" ⟧").formatted(Formatting.WHITE));
+                .append(Text.literal(" ⟧").formatted(Formatting.GRAY));
     }
 
     private static Formatting formattingFor(OreType oreType) {
         return switch (oreType) {
-            case COAL, COPPER, IRON -> Formatting.WHITE;
+            case COAL, COPPER, IRON -> Formatting.GRAY;
             case GOLD, REDSTONE, LAPIS -> Formatting.YELLOW;
             case DIAMOND, EMERALD -> Formatting.AQUA;
             case ANCIENT_DEBRIS -> Formatting.LIGHT_PURPLE;
@@ -194,7 +241,7 @@ public class TelluricHeartItem extends Item {
         }
 
         player.getServerWorld().spawnParticles(
-                ParticleTypes.END_ROD,
+                ParticleTypes.ENCHANT,
                 player.getX(),
                 player.getY() + 1.0D,
                 player.getZ(),
@@ -212,18 +259,15 @@ public class TelluricHeartItem extends Item {
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 60, 0));
                 player.getHungerManager().addExhaustion(0.5F);
             }
-
             case GOLD, REDSTONE, LAPIS -> {
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 100, 0));
                 player.getHungerManager().addExhaustion(1.0F);
             }
-
             case DIAMOND, EMERALD -> {
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 140, 0));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 60, 0));
                 player.getHungerManager().addExhaustion(1.5F);
             }
-
             case ANCIENT_DEBRIS -> {
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 200, 1));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 0));

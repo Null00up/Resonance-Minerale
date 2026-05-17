@@ -2,23 +2,23 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "CDC",
-    "DAD",
-    "CDC"
+    "MDM",
+    "DHD",
+    "MDM"
   ],
   "key": {
-    "C": {
-      "item": "minecraft:coal"
+    "M": {
+      "item": "minecraft:copper_ingot"
     },
     "D": {
       "item": "minecraft:dripstone_block"
     },
-    "A": {
-      "item": "minecraft:amethyst_shard"
+    "H": {
+      "item": "resonance_minerale:telluric_heart"
     }
   },
   "result": {
-    "id": "resonance_minerale:telluric_heart",
+    "id": "resonance_minerale:telluric_heart_tier_copper",
     "count": 1
   }
 }

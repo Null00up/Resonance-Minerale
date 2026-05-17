@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "MDM",
+    "DHD",
+    "MDM"
+  ],
+  "key": {
+    "M": {
+      "item": "minecraft:ancient_debris"
+    },
+    "D": {
+      "item": "minecraft:dripstone_block"
+    },
+    "H": {
+      "item": "resonance_minerale:telluric_heart_tier_emerald"
+    }
+  },
+  "result": {
+    "id": "resonance_minerale:telluric_heart_tier_ancient_debris",
+    "count": 1
+  }
+}

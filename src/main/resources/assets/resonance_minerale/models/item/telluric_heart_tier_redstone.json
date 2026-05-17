@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "resonance_minerale:item/telluric_heart_coal"
+    "layer0": "resonance_minerale:item/telluric_heart_redstone"
   },
   "overrides": [
     {

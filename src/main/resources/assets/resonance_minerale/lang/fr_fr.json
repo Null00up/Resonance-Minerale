@@ -1,3 +1,11 @@
 {
-  "item.resonance_minerale.telluric_heart": "Cœur Tellurique"
+  "item.resonance_minerale.telluric_heart": "Cœur Tellurique — Charbon",
+  "item.resonance_minerale.telluric_heart_tier_copper": "Cœur Tellurique — Cuivre",
+  "item.resonance_minerale.telluric_heart_tier_iron": "Cœur Tellurique — Fer",
+  "item.resonance_minerale.telluric_heart_tier_gold": "Cœur Tellurique — Or",
+  "item.resonance_minerale.telluric_heart_tier_redstone": "Cœur Tellurique — Redstone",
+  "item.resonance_minerale.telluric_heart_tier_lapis": "Cœur Tellurique — Lapis",
+  "item.resonance_minerale.telluric_heart_tier_diamond": "Cœur Tellurique — Diamant",
+  "item.resonance_minerale.telluric_heart_tier_emerald": "Cœur Tellurique — Émeraude",
+  "item.resonance_minerale.telluric_heart_tier_ancient_debris": "Cœur Tellurique — Débris antiques"
 }

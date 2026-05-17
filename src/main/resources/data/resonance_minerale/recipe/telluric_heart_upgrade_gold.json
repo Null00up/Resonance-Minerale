@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "MDM",
+    "DHD",
+    "MDM"
+  ],
+  "key": {
+    "M": {
+      "item": "minecraft:gold_ingot"
+    },
+    "D": {
+      "item": "minecraft:dripstone_block"
+    },
+    "H": {
+      "item": "resonance_minerale:telluric_heart_tier_iron"
+    }
+  },
+  "result": {
+    "id": "resonance_minerale:telluric_heart_tier_gold",
+    "count": 1
+  }
+}
