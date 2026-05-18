@@ -23,8 +23,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import com.resonanceminerale.registry.ModSounds;
-import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 
 import java.util.List;
 
@@ -320,20 +319,6 @@ public class TelluricHeartItem extends Item {
         };
 
         stack.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(customModelData));
-    }
-
-    private static SoundEvent soundFor(OreType oreType) {
-        return switch (oreType) {
-            case COAL -> ModSounds.RESONANCE_COAL;
-            case COPPER -> ModSounds.RESONANCE_COPPER;
-            case IRON -> ModSounds.RESONANCE_IRON;
-            case GOLD -> ModSounds.RESONANCE_GOLD;
-            case REDSTONE -> ModSounds.RESONANCE_REDSTONE;
-            case LAPIS -> ModSounds.RESONANCE_LAPIS;
-            case DIAMOND -> ModSounds.RESONANCE_DIAMOND;
-            case EMERALD -> ModSounds.RESONANCE_EMERALD;
-            case ANCIENT_DEBRIS -> ModSounds.RESONANCE_ANCIENT_DEBRIS;
-        };
     }
 }
 
