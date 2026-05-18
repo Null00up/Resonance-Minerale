@@ -1,4 +1,4 @@
-﻿package com.resonanceminerale.item;
+package com.resonanceminerale.item;
 
 import com.resonanceminerale.cooldown.PlayerCooldownManager;
 import com.resonanceminerale.detection.OreDetectionResult;
@@ -190,16 +190,16 @@ public class TelluricHeartItem extends Item {
         Formatting oreColor = formattingFor(oreType);
 
         String message = switch (signalStrength) {
-            case STRONG -> "RÃ©sonance de " + oreType.displayName() + " trÃ¨s forte...";
-            case MEDIUM -> "RÃ©sonance de " + oreType.displayName() + " dÃ©tectÃ©e...";
-            case WEAK -> "Faible rÃ©sonance de " + oreType.displayName() + "...";
-            case NONE -> "Aucune rÃ©sonance de " + oreType.displayName() + " proche.";
+            case STRONG -> "R\u00E9sonance de " + oreType.displayName() + " tr\u00E8s forte...";
+            case MEDIUM -> "R\u00E9sonance de " + oreType.displayName() + " d\u00E9tect\u00E9e...";
+            case WEAK -> "Faible r\u00E9sonance de " + oreType.displayName() + "...";
+            case NONE -> "Aucune r\u00E9sonance de " + oreType.displayName() + " proche.";
         };
 
         return Text.empty()
-                .append(Text.literal("âŸ¦ ").formatted(Formatting.DARK_GRAY))
+                .append(Text.literal("⟦ ").formatted(Formatting.DARK_GRAY))
                 .append(Text.literal(message).formatted(oreColor))
-                .append(Text.literal(" âŸ§").formatted(Formatting.DARK_GRAY));
+                .append(Text.literal(" ⟧").formatted(Formatting.DARK_GRAY));
     }
 
     private static Text targetChangedMessage(OreType oreType) {
