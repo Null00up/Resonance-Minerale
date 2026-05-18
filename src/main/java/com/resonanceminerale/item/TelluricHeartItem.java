@@ -233,10 +233,10 @@ public class TelluricHeartItem extends Item {
         Formatting oreColor = formattingFor(oreType);
 
         return Text.empty()
-                .append(Text.literal("âŸ¦ ").formatted(Formatting.GRAY))
-                .append(Text.literal("Cible changÃ©e : ").formatted(Formatting.GRAY))
+                .append(Text.literal("\u27E6 ").formatted(Formatting.GRAY))
+                .append(Text.literal("Cible chang\u00E9e : ").formatted(Formatting.GRAY))
                 .append(Text.literal(oreType.displayName()).formatted(oreColor))
-                .append(Text.literal(" âŸ§").formatted(Formatting.GRAY));
+                .append(Text.literal(" \u27E7").formatted(Formatting.GRAY));
     }
 
     private static Formatting formattingFor(OreType oreType) {
