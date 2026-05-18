@@ -118,12 +118,40 @@ public class TelluricHeartItem extends Item {
                 .formatted(Formatting.GRAY)
                 .append(Text.literal(maxOre.displayName()).formatted(formattingFor(maxOre))));
 
-        tooltip.add(Text.literal("Cible : ")
+        tooltip.add(Text.literal("Cible actuelle : ")
                 .formatted(Formatting.GRAY)
                 .append(Text.literal(targetOre.displayName()).formatted(formattingFor(targetOre))));
 
+        tooltip.add(Text.literal("Minerais d\u00E9bloqu\u00E9s : ")
+                .formatted(Formatting.DARK_GRAY)
+                .append(Text.literal(unlockedOresText()).formatted(Formatting.GRAY)));
+
+        tooltip.add(Text.literal("Port\u00E9e de la cible : ")
+                .formatted(Formatting.DARK_GRAY)
+                .append(Text.literal(targetOre.detectionRadius() + " blocs").formatted(Formatting.AQUA)));
+
+        tooltip.add(Text.literal("Cooldown : ")
+                .formatted(Formatting.DARK_GRAY)
+                .append(Text.literal(COOLDOWN_SECONDS + " secondes").formatted(Formatting.YELLOW)));
+
         tooltip.add(Text.literal("Clic droit : sonder les environs").formatted(Formatting.DARK_GRAY));
         tooltip.add(Text.literal("Shift + clic droit : changer de minerai").formatted(Formatting.DARK_GRAY));
+    }
+
+    private String unlockedOresText() {
+        StringBuilder builder = new StringBuilder();
+
+        OreType[] ores = OreType.values();
+
+        for (int i = 0; i < maxTier && i < ores.length; i++) {
+            if (i > 0) {
+                builder.append(", ");
+            }
+
+            builder.append(ores[i].displayName());
+        }
+
+        return builder.toString();
     }
 
     private OreType getTargetOre(ItemStack stack) {
