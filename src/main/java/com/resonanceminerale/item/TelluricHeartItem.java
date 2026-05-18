@@ -1,4 +1,4 @@
-package com.resonanceminerale.item;
+﻿package com.resonanceminerale.item;
 
 import com.resonanceminerale.cooldown.PlayerCooldownManager;
 import com.resonanceminerale.detection.OreDetectionResult;
@@ -23,11 +23,13 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import com.resonanceminerale.registry.ModSounds;
+import net.minecraft.sound.SoundEvent;
 
 import java.util.List;
 
 public class TelluricHeartItem extends Item {
-    public static final int COOLDOWN_SECONDS = 30;
+    private static final int COOLDOWN_SECONDS = 20;
     private static final float TARGET_CHANGE_SOUND_VOLUME = 1.0F;
     private static final float RESONANCE_SOUND_VOLUME = 1.5F;
 
@@ -70,7 +72,7 @@ public class TelluricHeartItem extends Item {
         updateStackVisuals(stack, targetOre);
 
         if (PlayerCooldownManager.isOnCooldown(serverPlayer, this)) {
-            serverPlayer.sendMessage(Text.literal("Le Cœur Tellurique récupère son énergie..."), true);
+            serverPlayer.sendMessage(Text.literal("Le CÅ“ur Tellurique rÃ©cupÃ¨re son Ã©nergie..."), true);
             return TypedActionResult.pass(stack);
         }
 
@@ -188,26 +190,26 @@ public class TelluricHeartItem extends Item {
         Formatting oreColor = formattingFor(oreType);
 
         String message = switch (signalStrength) {
-            case STRONG -> "Résonance de " + oreType.displayName() + " très forte...";
-            case MEDIUM -> "Résonance de " + oreType.displayName() + " détectée...";
-            case WEAK -> "Faible résonance de " + oreType.displayName() + "...";
-            case NONE -> "Aucune résonance de " + oreType.displayName() + " proche.";
+            case STRONG -> "RÃ©sonance de " + oreType.displayName() + " trÃ¨s forte...";
+            case MEDIUM -> "RÃ©sonance de " + oreType.displayName() + " dÃ©tectÃ©e...";
+            case WEAK -> "Faible rÃ©sonance de " + oreType.displayName() + "...";
+            case NONE -> "Aucune rÃ©sonance de " + oreType.displayName() + " proche.";
         };
 
         return Text.empty()
-                .append(Text.literal("⟦ ").formatted(Formatting.DARK_GRAY))
+                .append(Text.literal("âŸ¦ ").formatted(Formatting.DARK_GRAY))
                 .append(Text.literal(message).formatted(oreColor))
-                .append(Text.literal(" ⟧").formatted(Formatting.DARK_GRAY));
+                .append(Text.literal(" âŸ§").formatted(Formatting.DARK_GRAY));
     }
 
     private static Text targetChangedMessage(OreType oreType) {
         Formatting oreColor = formattingFor(oreType);
 
         return Text.empty()
-                .append(Text.literal("⟦ ").formatted(Formatting.GRAY))
-                .append(Text.literal("Cible changée : ").formatted(Formatting.GRAY))
+                .append(Text.literal("âŸ¦ ").formatted(Formatting.GRAY))
+                .append(Text.literal("Cible changÃ©e : ").formatted(Formatting.GRAY))
                 .append(Text.literal(oreType.displayName()).formatted(oreColor))
-                .append(Text.literal(" ⟧").formatted(Formatting.GRAY));
+                .append(Text.literal(" âŸ§").formatted(Formatting.GRAY));
     }
 
     private static Formatting formattingFor(OreType oreType) {
@@ -276,7 +278,7 @@ public class TelluricHeartItem extends Item {
         }
     }
 
-    private static void updateItemSkin(ItemStack stack, OreType oreType) {
+        private static void updateItemSkin(ItemStack stack, OreType oreType) {
         int customModelData = switch (oreType) {
             case COAL -> 1;
             case COPPER -> 2;
@@ -291,4 +293,19 @@ public class TelluricHeartItem extends Item {
 
         stack.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(customModelData));
     }
+
+    private static SoundEvent soundFor(OreType oreType) {
+        return switch (oreType) {
+            case COAL -> ModSounds.RESONANCE_COAL;
+            case COPPER -> ModSounds.RESONANCE_COPPER;
+            case IRON -> ModSounds.RESONANCE_IRON;
+            case GOLD -> ModSounds.RESONANCE_GOLD;
+            case REDSTONE -> ModSounds.RESONANCE_REDSTONE;
+            case LAPIS -> ModSounds.RESONANCE_LAPIS;
+            case DIAMOND -> ModSounds.RESONANCE_DIAMOND;
+            case EMERALD -> ModSounds.RESONANCE_EMERALD;
+            case ANCIENT_DEBRIS -> ModSounds.RESONANCE_ANCIENT_DEBRIS;
+        };
+    }
 }
+
