@@ -41,13 +41,32 @@ La V1 transforme le **Cœur Tellurique** en un objet progressif, avec plusieurs 
 - Les autres minerais se débloquent via des crafts d’amélioration.
 - Le changement de cible se fait avec **Shift + clic droit**.
 - Le clic droit normal lance la détection du minerai sélectionné.
-- Le cooldown d’utilisation est de **30 secondes**.
+- Le cooldown d’utilisation est de **20 secondes**.
 - L’objet applique des malus légers pour éviter qu’il soit trop puissant.
 - Les textures changent selon le minerai sélectionné.
-- Les sons et particules renforcent l’effet de résonance.
+- Les sons vanilla et les particules renforcent l’effet de résonance.
 - Le système est pensé pour éviter un comportement de type X-Ray.
+- Les sons custom sont mis de côté pour la V1 afin de garder une version simple et stable.
+- Les messages français sont sécurisés pour éviter les problèmes d’encodage.
+- Les tooltips affichent le niveau, la cible, les minerais débloqués, la portée, le cooldown et les contrôles.
 
 ---
+
+## État actuel — V1 stabilisée
+
+La V1 actuelle est fonctionnelle et validée en jeu :
+
+- crafts V1 testés et fonctionnels ;
+- progression par niveaux fonctionnelle ;
+- changement de cible limité selon le niveau du Cœur ;
+- cooldown réglé à **20 secondes** ;
+- messages français corrigés et sécurisés ;
+- tooltips améliorés ;
+- sons vanilla conservés ;
+- sons custom mis de côté pour une future version ;
+- malus conservés tels quels ;
+- build Gradle fonctionnel ;
+- test en jeu fonctionnel.
 
 ## Contrôles
 
@@ -225,7 +244,7 @@ L’idée principale est de créer une sensation de **résonance minérale**, pa
 
 Pour éviter que le Cœur Tellurique soit trop puissant :
 
-- l’objet possède un cooldown de **30 secondes** ;
+- l’objet possède un cooldown de **20 secondes** ;
 - les minerais rares ont une portée plus courte ;
 - des malus sont appliqués après utilisation ;
 - les minerais puissants nécessitent plusieurs améliorations successives ;
